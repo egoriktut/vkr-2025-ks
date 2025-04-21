@@ -3,7 +3,6 @@ uvicorn[standard]
 celery[redis]
 sqlalchemy
 transformers
-sentence-transformers
 beautifulsoup4
 requests
 pydantic
@@ -17,3 +16,6 @@ opencv-python
 fuzzywuzzy
 alembic
 num2words
+camelot-py[base]
+ctransformers
+pdfplumber

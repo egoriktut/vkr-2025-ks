@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://185.171.194.122:8090/',
+  baseURL: 'http://88.201.232.119:8090/',
   headers: {
     'Content-Type': 'application/json',
     // "token": localStorage.getItem('token'),

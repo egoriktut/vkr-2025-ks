@@ -1,18 +1,15 @@
-import json
 import re
 import os
 from datetime import datetime
 from typing import Dict, List, Optional
 
 import numpy as np
-from sentence_transformers import SentenceTransformer, util
+# from sentence_transformers import SentenceTransformer, util
 
 import requests
-import random
 
 from fuzzywuzzy import fuzz
 from num2words import num2words
-from ai.ai_model import AIModel
 
 from app.schemas.api import ValidationOption, ValidationOptionResult
 from app.schemas.ks import KSAttributes
@@ -21,8 +18,8 @@ from app.utils.file_util import read_file
 
 class KSValidator:
     def __init__(self, model_path: Optional[str] = None) -> None:
-        self.model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2", device="cpu")
-        self.llama = AIModel()
+        # self.model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2", device="cpu")
+        # self.llama = AIModel()
         self.reference_col_name = {
                 "name": ["Наименование", "Название"],
                 "quantity": ["Кол.", "Кол-", "Кол-во", "Количество"],
@@ -118,14 +115,14 @@ class KSValidator:
                     Output must be either "yes" or "no" with no explanation or additional words.
                 """
                 prompts.append(prompt)
-            for prompt in prompts:
-                result = self.llama.make_a_prompt(prompt)
-                print(prompt)
-                print(result)
-                if "yes" in result.lower():
-                    return ValidationOptionResult(status=True, description="упоминание найдено")
-                elif "no" in result.lower():
-                    continue
+            # for prompt in prompts:
+            #     result = self.llama.make_a_prompt(prompt)
+            #     print(prompt)
+            #     print(result)
+            #     if "yes" in result.lower():
+            #         return ValidationOptionResult(status=True, description="упоминание найдено")
+            #     elif "no" in result.lower():
+            #         continue
         return ValidationOptionResult(status=False, description="упоминание не найдено")
 
     def validate_delivery_graphic(self, page_data: KSAttributes) -> ValidationOptionResult:
@@ -297,14 +294,14 @@ class KSValidator:
         td_name = text
 
         # Преобразование текстов в векторы
-        interface_embedding = self.model.encode(interface_name, convert_to_tensor=True)
-        td_embedding = self.model.encode(td_name, convert_to_tensor=True)
-
-        # Вычисление сходства
-        similarity_score = util.cos_sim(interface_embedding, td_embedding).item()
-        print(f"TRANFORMER OPTIMUS {similarity_score}, name {name}, text {text}")
-
-        return similarity_score
+        # interface_embedding = self.model.encode(interface_name, convert_to_tensor=True)
+        # td_embedding = self.model.encode(td_name, convert_to_tensor=True)
+        #
+        # # Вычисление сходства
+        # similarity_score = util.cos_sim(interface_embedding, td_embedding).item()
+        # print(f"TRANFORMER OPTIMUS {similarity_score}, name {name}, text {text}")
+        #
+        # return similarity_score
 
     def check_similarity2_transformer(self, name: str, text: str) -> int:
         # Тексты для проверки
@@ -312,13 +309,13 @@ class KSValidator:
         td_name = text
 
         # Получение векторов
-        interface_embedding = self.model.encode(interface_name)
-        td_embedding = self.model.encode(td_name)
-
-        # Евклидово расстояние между векторами
-        euclidean_distance = np.linalg.norm(interface_embedding - td_embedding)
-        print(f"TRANFORMER BUMBELBIE {euclidean_distance}, name {name}, text {text}")
-        return euclidean_distance
+        # interface_embedding = self.model.encode(interface_name)
+        # td_embedding = self.model.encode(td_name)
+        #
+        # # Евклидово расстояние между векторами
+        # euclidean_distance = np.linalg.norm(interface_embedding - td_embedding)
+        # print(f"TRANFORMER BUMBELBIE {euclidean_distance}, name {name}, text {text}")
+        # return euclidean_distance
 
     def validate_specifications(self, api_data: KSAttributes) -> ValidationOptionResult:
         validation_checks = []

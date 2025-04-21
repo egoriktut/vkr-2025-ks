@@ -1,19 +1,22 @@
-import openai
-import json
-
-
-class AIModel:
-    def __init__(self):
-        self.client = openai.OpenAI(
-            base_url="http://0.0.0.0:8080",
-            api_key="sk-no-key-required"
-        )
-
-    def make_a_prompt(self, prompt_msg: str):
-        completion = self.client.chat.completions.create(
-            model="llama",
-            messages=[
-                {"role": "system", "content": prompt_msg}
-            ],
-        )
-        return completion.choices[0].message.content
+from ctransformers import AutoModelForCausalLM
+#
+# llm = AutoModelForCausalLM.from_pretrained(
+#     "./llama-2-7b-chat.ggmlv3.q8_0.bin",
+#     model_type="llama",
+#     gpu_layers=0,
+#     threads=12,
+#     context_length=2048,
+#     batch_size=1
+# )
+#
+#
+# response = llm(
+#     "how are you? my name is Egor, you?",
+#     temperature=0.7,
+#     top_k=40,
+#     top_p=0.9,
+#     repetition_penalty=1.1,
+#     max_new_tokens=150
+# )
+#
+# print(response)

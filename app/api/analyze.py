@@ -13,7 +13,7 @@ from app.tasks import start_analysis_task
 router = APIRouter()
 
 
-@router.post("/analyze/", response_model=AnalyzeUrlResponse)
+@router.post("/", response_model=AnalyzeUrlResponse)
 async def analyze_url(request: AnalyzeUrlRequest) -> AnalyzeUrlResponse:
     task_ids: Dict[str, str] = {}
     for url in set(request.urls):
@@ -22,7 +22,8 @@ async def analyze_url(request: AnalyzeUrlRequest) -> AnalyzeUrlResponse:
     return AnalyzeUrlResponse(task_ids=task_ids, status="processing")
 
 
-@router.get("/analyze/{task_id}", response_model=AnalysisResultResponse)
+# Пачкой
+@router.get("/{task_id}", response_model=AnalysisResultResponse)
 async def get_analysis_result(task_id: str) -> AnalysisResultResponse:
     task_result = AsyncResult(task_id)
     if task_result.state == "PENDING":

@@ -9,18 +9,20 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.backend  # или ваш основной Dockerfile.frontend
+      dockerfile: Dockerfile.backend
     ports:
       - "8090:8090"
     environment:
       - REDIS_HOST=redis
     depends_on:
       - redis
+    volumes:
+      - ./sqlite_data:/data
 
   celery_worker:
     build:
       context: .
-      dockerfile: Dockerfile.backend  # тот же, что и для app
+      dockerfile: Dockerfile.backend
     command: celery -A app.celery_app worker --loglevel=debug
     environment:
       - REDIS_HOST=redis
@@ -33,10 +35,10 @@ services:
       context: ./front
       dockerfile: Dockerfile.frontend
     ports:
-      - "8080:80"  # внешний порт:внутренний порт nginx
+      - "8080:80"
     volumes:
-      - ./front:/app  # монтируем в /app, а не в корень
-      - /app/node_modules  # изолируем node_modules
+      - ./front:/app
+      - /app/node_modules
     environment:
       - NODE_ENV=development
     depends_on:
