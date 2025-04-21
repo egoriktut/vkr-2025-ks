@@ -1,0 +1,46 @@
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend  # или ваш основной Dockerfile.frontend
+    ports:
+      - "8090:8090"
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend  # тот же, что и для app
+    command: celery -A app.celery_app worker --loglevel=debug
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+      - app
+
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "8080:80"  # внешний порт:внутренний порт nginx
+    volumes:
+      - ./front:/app  # монтируем в /app, а не в корень
+      - /app/node_modules  # изолируем node_modules
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - app
+
+volumes:
+  redis_data:
