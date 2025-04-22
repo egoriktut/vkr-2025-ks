@@ -226,7 +226,7 @@ const onSubmit = async () => {
         errorValid.value = true;
         return;
       }
-      await resetPassword({ email: username.value, password: password.value });
+      await resetPassword({ email: username.value, password: password.value, verification_code:  confirmationCode.value});
       step.value = "login";
     }
 
