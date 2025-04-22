@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import {getData, postData} from "@/api/api.js";
+import BodyComponent from "@/components/BodyComponent.vue";
 
 const url = ref("")
 const selectedReasons = ref([])
@@ -132,6 +133,7 @@ const sendReportMock = (url) => {
 </script>
 
 <template>
+  <BodyComponent>
   <div class="container">
     <h2>Основания для снятия КС с публикации</h2>
 
@@ -225,6 +227,7 @@ const sendReportMock = (url) => {
       </ul>
     </div>
   </div>
+  </BodyComponent>
 </template>
 
 <style scoped>

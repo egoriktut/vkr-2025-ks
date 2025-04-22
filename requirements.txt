@@ -19,3 +19,7 @@ num2words
 camelot-py[base]
 ctransformers
 pdfplumber
+passlib
+pybase64
+secure-smtplib
+bcrypt

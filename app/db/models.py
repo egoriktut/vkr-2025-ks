@@ -1,6 +1,7 @@
+from typing import Any
+
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Enum, Boolean
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 
 from app.enums import TaskStatus
 from app.db.database import Base, engine
@@ -11,12 +12,16 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    full_name = Column(String)
-    is_active = Column(Boolean, default=True)
+    first_name = Column(String)
+    last_name = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    verification_code = Column(String)
+    activated = Column(Boolean, default=False)
+    token = Column(String)
 
-    def __repr__(self):
-        return f"<User(id={self.id}, email={self.email})>"
+    @property
+    def as_dict(self) -> dict[str, Any]:
+        return self.__dict__
 
 
 class TaskHistory(Base):
