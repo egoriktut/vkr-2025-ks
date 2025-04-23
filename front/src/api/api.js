@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://88.201.232.119:8090/',
+  // baseURL: 'http://88.201.232.119:8090/',
+  baseURL: 'https://egoriktut.ru/api_ks_app/v1/',
   headers: {
     'Content-Type': 'application/json',
-    // "token": localStorage.getItem('token'),
+    "token": localStorage.getItem('token'),
   },
 });
 

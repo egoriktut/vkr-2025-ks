@@ -1,6 +1,6 @@
 from celery import Celery
 
-from app.config import settings
+from config import settings
 
 celery_app = Celery("app", broker=settings.BROKER_URL, backend=settings.BACKEND_URL)
 

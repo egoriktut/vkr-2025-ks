@@ -19,6 +19,22 @@ services:
     volumes:
       - ./sqlite_data:/data
 
+  model:
+    build:
+      context: .
+      dockerfile: Dockerfile.model
+    ports:
+      - "8050:8050"
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "5252:11434"
+    volumes:
+      - ollama:/root/.ollama
+    environment:
+      - OLLAMA_MODELS=llama3
+
   celery_worker:
     build:
       context: .
@@ -46,3 +62,4 @@ services:
 
 volumes:
   redis_data:
+  ollama:

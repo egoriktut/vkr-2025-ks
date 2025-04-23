@@ -9,6 +9,7 @@ from app.auth.schemas import (
     ResetPasswordSchema,
     ResetPasswordSchemaCode,
 )
+from config import settings, Settings
 
 router = APIRouter()
 
@@ -61,4 +62,35 @@ async def reset_password_code(
     email: ResetPasswordSchemaCode, db: Session = Depends(get_db)
 ):
     AuthService.send_code_verification_email(db, email.email)
+    return {"message": "code sent"}
+
+import requests
+settings = Settings()
+@router.post("/oolama")
+async def oolama():
+    # Проверяем доступность сервера
+    response = requests.get(f"{settings.MODEL_URL}")
+    print(response.text)
+
+    # Проверка similarity
+    response = requests.post(f"{settings.MODEL_URL}/check_similarity_transformer", json={
+        "first": "Текст1",
+        "second": "Текст1",  # исправила опечатку
+    })
+    print(response.text)
+
+    # Проверка другой similarity
+    response = requests.post(f"{settings.MODEL_URL}/check_similarity2_transformer", json={
+        "first": "Текст1",
+        "second": "Текст1",  # исправила опечатку
+    })
+    print(response.text)
+
+    # Запрос к Llama через свой эндпоинт
+    response = requests.post(f"{settings.MODEL_URL}/llama_prompt", json={
+        "first": "Текст1",
+        "second": "Текст1",  # исправила опечатку
+    })
+    print(response.text)
+
     return {"message": "code sent"}

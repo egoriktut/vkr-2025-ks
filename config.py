@@ -7,7 +7,8 @@ class Settings(BaseSettings):
     BROKER_URL: str
     BACKEND_URL: Optional[str] = None
     DATABASE_URL: str
-    MODEL_PATH: str
+    MODEL_URL: str
+    LLAMA_URL: str
 
     class Config:
         env_file = ".env"
