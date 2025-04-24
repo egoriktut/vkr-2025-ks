@@ -3,12 +3,12 @@ from typing import Dict
 from celery.result import AsyncResult
 from fastapi import APIRouter
 
-from app.schemas.api import (
+from analyze.schemas import (
     AnalysisResultResponse,
     AnalyzeUrlRequest,
     AnalyzeUrlResponse,
 )
-from app.tasks import start_analysis_task
+from celery_app.tasks import start_analysis_task
 
 router = APIRouter()
 
@@ -23,6 +23,7 @@ async def analyze_url(request: AnalyzeUrlRequest) -> AnalyzeUrlResponse:
 
 
 # Пачкой
+# TODO: Сравнивать с enum
 @router.get("/{task_id}", response_model=AnalysisResultResponse)
 async def get_analysis_result(task_id: str) -> AnalysisResultResponse:
     task_result = AsyncResult(task_id)

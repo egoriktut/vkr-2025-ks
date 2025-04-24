@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     BACKEND_URL: Optional[str] = None
     DATABASE_URL: str
     MODEL_URL: str
-    LLAMA_URL: str
 
     class Config:
         env_file = ".env"

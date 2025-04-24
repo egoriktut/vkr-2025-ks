@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-import app.db.models as models
-
-from app.api.api import router
+import db.models as models
+from api.api import router
 
 app = FastAPI()
 app.add_middleware(

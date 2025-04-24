@@ -1,10 +1,20 @@
 from typing import Any
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Enum, Boolean
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
 from sqlalchemy.sql import func
 
-from app.enums import TaskStatus
-from app.db.database import Base, engine
+from db.database import Base, engine
+from enums import TaskStatus
+
 
 class User(Base):
     __tablename__ = "users"
@@ -34,7 +44,6 @@ class TaskHistory(Base):
     status = Column(Enum(TaskStatus), default=TaskStatus.PENDING)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     completed_at = Column(DateTime(timezone=True))
-
 
 
 Base.metadata.create_all(bind=engine)

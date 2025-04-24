@@ -4,6 +4,17 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel
 
 
+class KSAttributes(BaseModel):
+    files: List[dict]
+    auction_id: int
+    name: str
+    isContractGuaranteeRequired: float | bool
+    isLicenseProduction: str | bool
+    deliveries: List[dict]
+    startCost: float
+    contractCost: float | None
+
+
 class ValidationOption(int, Enum):
     VALIDATE_NAMING = 1
     VALIDATE_PERFORM_CONTRACT_REQUIRED = 2

@@ -3,7 +3,7 @@ from typing import Optional
 
 import requests
 
-from app.schemas.ks import KSAttributes
+from analyze.schemas import KSAttributes
 
 
 class ParserWeb:
@@ -12,15 +12,13 @@ class ParserWeb:
         self.url: str = url
         self.attributes: Optional[KSAttributes] = None
 
-    @staticmethod
-    def is_real_url(url: str) -> bool:
-        result = requests.get(url)
+    def is_real_url(self) -> bool:
+        result = requests.get(self.url)
         return result.status_code == 200
 
-    @staticmethod
-    def get_attributes_ks(url: str) -> Optional[KSAttributes]:
+    def get_attributes_ks(self) -> Optional[KSAttributes]:
         try:
-            auction_id = url.split("/")[-1]
+            auction_id = self.url.split("/")[-1]
             result = json.loads(
                 requests.get(
                     f"https://zakupki.mos.ru/newapi/api/Auction/Get?auctionId={auction_id}"
@@ -51,17 +49,9 @@ class ParserWeb:
                 contractCost=result["contractCost"],
             )
             return result
-        except Exception as e:
+        except Exception as error:
+            print(error)
             return None
 
-    def start(self) -> None:
-        if self.is_real_url(self.url):
-            attr = self.get_attributes_ks(self.url)
-            if attr:
-                self.attributes = attr
-
-
-def fetch_and_parse(url: str) -> Optional[KSAttributes]:
-    parser = ParserWeb(url)
-    attributes = parser.get_attributes_ks(url)
-    return attributes
+    def fetch_and_parse(self) -> Optional[KSAttributes]:
+        return self.get_attributes_ks() if self.is_real_url() else None

@@ -81,31 +81,31 @@
 # import requests
 # import json
 #
-url = "http://localhost:5252/api/generate"
-text1 = "Yes! Today is weekend"
-text2 = "Oh, monday today"
-prompt = f"""
-You will compare the meaning of two texts.
-
-Answer strictly with one word: "yes" if the meanings are similar, or "no" if they are different. Do not explain or add anything else.
-
-First text: "{text1}"
-Second text: "{text2}"
-"""
-payload = {
-    "model": "llama3",
-    "prompt": prompt,
-    "stream": False  # <<< ВАЖНО: отключаем потоковый режим
-}
-
-headers = {
-    "Content-Type": "application/json",
-}
-
-response = requests.post(url, headers=headers, data=json.dumps(payload))
-
-# Теперь весь ответ будет цельный
-result = response.json()
-
-# Печатаем только текст ответа
-print(result["response"])
+# url = "http://localhost:5252/api/generate"
+# text1 = "Yes! Today is weekend"
+# text2 = "Oh, monday today"
+# prompt = f"""
+# You will compare the meaning of two texts.
+#
+# Answer strictly with one word: "yes" if the meanings are similar, or "no" if they are different. Do not explain or add anything else.
+#
+# First text: "{text1}"
+# Second text: "{text2}"
+# """
+# payload = {
+#     "model": "llama3",
+#     "prompt": prompt,
+#     "stream": False  # <<< ВАЖНО: отключаем потоковый режим
+# }
+#
+# headers = {
+#     "Content-Type": "application/json",
+# }
+#
+# response = requests.post(url, headers=headers, data=json.dumps(payload))
+#
+# # Теперь весь ответ будет цельный
+# result = response.json()
+#
+# # Печатаем только текст ответа
+# print(result["response"])

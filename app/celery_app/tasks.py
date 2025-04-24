@@ -1,19 +1,17 @@
 from typing import Dict, List
 
-from app.validation import KSValidator
-from app.celery_app import celery_app
+from analyze.schemas import Result, ValidationOption
+from analyze.scraper import ParserWeb
+from analyze.validation import KSValidator
+from celery_app.app import celery_app
 from config import settings
-from app.analyze.schemas import Result, ValidationOption
-from app.analyze.scraper import fetch_and_parse
 
 ks_validator = KSValidator(settings.MODEL_URL)
 
 
 @celery_app.task
 def start_analysis_task(url: str, validate_params: List[ValidationOption]) -> Dict:
-    page_data = fetch_and_parse(
-        url
-    )  # Assuming `fetch_and_parse` returns a dict with 'content' key
+    page_data = ParserWeb(url).fetch_and_parse()
     if page_data is None:
         raise Exception()
     analysis_result = ks_validator.validate_content(page_data, validate_params)
