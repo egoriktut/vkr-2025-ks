@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from model.model_llama import LLAMA
-from model.model_sentence_transformers import TransformerC
-from model.schemas import TwoTextsInput
+from model_llama import LLAMA
+from model_sentence_transformers import TransformerC
+from schemas import TwoTextsInput
 
 router = APIRouter()
 

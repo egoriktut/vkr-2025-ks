@@ -3,9 +3,8 @@ from typing import Dict, List
 from app.validation import KSValidator
 from app.celery_app import celery_app
 from config import settings
-from app.schemas.api import Result, ValidationOption
-from app.schemas.ks import KSAttributes
-from app.scraper import fetch_and_parse
+from app.analyze.schemas import Result, ValidationOption
+from app.analyze.scraper import fetch_and_parse
 
 ks_validator = KSValidator(settings.MODEL_URL)
 

@@ -2,8 +2,6 @@ fastapi
 uvicorn[standard]
 celery[redis]
 sqlalchemy
-transformers
-beautifulsoup4
 requests
 pydantic
 redis
@@ -12,14 +10,10 @@ pydantic-settings
 mypy
 camelot-py
 pandas
-opencv-python
 fuzzywuzzy
 alembic
 num2words
 camelot-py[base]
-ctransformers
 pdfplumber
 passlib
-pybase64
-secure-smtplib
 bcrypt

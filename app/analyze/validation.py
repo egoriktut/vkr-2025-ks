@@ -3,16 +3,12 @@ import os
 from datetime import datetime
 from typing import Dict, List, Optional
 
-import numpy as np
-# from sentence_transformers import SentenceTransformer, util
-
 import requests
 
 from fuzzywuzzy import fuzz
 from num2words import num2words
 
-from app.schemas.api import ValidationOption, ValidationOptionResult
-from app.schemas.ks import KSAttributes
+from app.analyze.schemas import ValidationOption, ValidationOptionResult, KSAttributes
 from app.utils.file_util import read_file
 
 

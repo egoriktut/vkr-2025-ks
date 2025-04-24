@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from config import settings
+from app.config import settings
 
 PROMPT_TEMPLATE_COMPARE = """
 You will compare the meaning of two texts.
