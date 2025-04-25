@@ -17,3 +17,5 @@ camelot-py[base]
 pdfplumber
 passlib
 bcrypt
+openpyxl
+PyPDF2

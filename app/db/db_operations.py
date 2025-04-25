@@ -1,6 +1,5 @@
-from sqlalchemy.orm import Session
-
 from db.models import User
+from sqlalchemy.orm import Session
 
 
 def get_user(db: Session, user_id: int) -> User | None:

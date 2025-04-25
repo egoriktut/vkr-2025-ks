@@ -1,19 +1,11 @@
+from auth.schemas import (ConfirmRegistrationSchema, RegistrationSchema,
+                          ResetPasswordSchema)
+from auth.utils import (generate_token, generate_verification_code,
+                        get_password_hash, send_verification_email,
+                        verify_password)
+from db.models import User
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-
-from auth.schemas import (
-    ConfirmRegistrationSchema,
-    RegistrationSchema,
-    ResetPasswordSchema,
-)
-from auth.utils import (
-    generate_token,
-    generate_verification_code,
-    get_password_hash,
-    send_verification_email,
-    verify_password,
-)
-from db.models import User
 
 
 class AuthService:

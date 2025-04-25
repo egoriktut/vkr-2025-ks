@@ -1,90 +1,99 @@
+import io
+import os
+import re
 import subprocess
-from typing import List, Optional, TypedDict
+from pathlib import Path
+from typing import Callable, Dict
 
-import camelot
 import pandas as pd
-import pdfplumber
-
-
-class PageData(TypedDict, total=False):
-    text: Optional[str]
-    table: Optional[List[List[List[str]]]]
-    inversed_text: Optional[str]
-    inversed_table: Optional[List[List[List[str]]]]
-
+from PyPDF2 import PdfReader
 
 pd.set_option("display.max_colwidth", None)
 
-import os
+
+def extract_text_from_pdf(pdf_bytes: bytes) -> str:
+    pdf_stream = io.BytesIO(pdf_bytes)
+    reader = PdfReader(pdf_stream)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text() + "\n"
+    return text.strip()
 
 
-def parse_pdf_tables(pdf_path):
-    output_dir = os.path.join(os.path.dirname(pdf_path))
-    os.makedirs(output_dir, exist_ok=True)
-    output_file_path = os.path.join(output_dir, os.path.basename(pdf_path) + ".decrypt")
-
-    tables = camelot.read_pdf(pdf_path, pages="all", flavor="stream")
-    # print("rel tables", len(tables), tables)
-    horizontal_tables = []
-    vertical_tables = []
-
-    with open(output_file_path, "w") as answer:
-        for i, table in enumerate(tables):
-            df = table.df
-            if df.shape[1] > df.shape[0]:
-                horizontal_tables.append(df)
-                answer.write(
-                    df.to_string(index=False, header=False)
-                    .replace("\n", " ")
-                    .replace("  ", " ")
-                    + "\n"
-                )
-            else:
-                vertical_df = df.transpose()
-                vertical_tables.append(vertical_df)
-                answer.write(
-                    vertical_df.to_string(index=False, header=False)
-                    .replace("\n", " ")
-                    .replace("  ", " ")
-                    + "\n"
-                )
-    # print("horizontal_tables", horizontal_tables)
-    # print("vertical_tables", vertical_tables)
-    return tables
+def extract_text_from_xlsx(xlsx_bytes: bytes) -> str:
+    """Извлекает текст из XLSX (Excel)."""
+    xlsx_stream = io.BytesIO(xlsx_bytes)
+    # Читаем все листы и объединяем текст
+    text = []
+    df_dict = pd.read_excel(xlsx_stream, sheet_name=None)  # Все листы
+    for sheet_name, df in df_dict.items():
+        text.append(f"--- Лист: {sheet_name} ---")
+        text.append(df.to_string(index=False))
+    return "\n".join(text).strip()
 
 
-def read_plain_text(path: str) -> str:
-    read_text = ""
-    with pdfplumber.open(path) as pdf:
-        for page in pdf.pages:
-            text = page.extract_text().replace("\n", " ").strip()
-            read_text += text
-    return read_text
+def extract_text_from_file(file_bytes: bytes, file_extension: str) -> str:
+    """Основная функция для извлечения текста из файла."""
+    handlers: Dict[str, Callable[[bytes], str]] = {
+        "pdf": extract_text_from_pdf,
+        "xlsx": extract_text_from_xlsx,
+        "xls": extract_text_from_xlsx,
+    }
+
+    file_extension = file_extension.lower()
+
+    if file_extension in handlers:
+        return handlers[file_extension](file_bytes)
+    else:
+        raise ValueError(f"Unsupported file type: {file_extension}")
 
 
-def doc_to_pdf(docpath) -> str:
-    arr = docpath.split("/")
-    dirname = "/".join(arr[:-1])
-    filename = arr[-1].replace(".docx", ".pdf")
-    filename = filename.replace(".doc", ".pdf")
+def convert_to_pdf(input_path: str) -> tuple:
+    """
+    Converts DOC/DOCX to PDF using LibreOffice.
+    Returns path to the generated PDF.
+    """
+    input_path = Path(input_path)
+    if not input_path.exists():
+        raise FileNotFoundError(f"Input file not found: {input_path}")
+
+    output_dir = input_path.parent
+
     subprocess.run(
-        ["soffice", "--headless", "--convert-to", "pdf", docpath, "--outdir", dirname]
+        [
+            "soffice",
+            "--headless",
+            "--convert-to",
+            "pdf",
+            str(input_path),
+            "--outdir",
+            str(output_dir),
+        ]
     )
-    return dirname + "/" + filename
+    # FIXME: ЗАЛУПА ЕБАНАЯ
+    pdf_path = output_dir / f"{input_path.stem}.pdf"
+    return (str(pdf_path) if pdf_path.exists() else None), pdf_path
 
 
-def read_file(path: str):
-    if path.endswith(".doc") or path.endswith(".docx"):
-        path_docx = path
-        path = doc_to_pdf(path)
-        # os.remove(path_docx)
-    try:
-        parsed_plaint_text = read_plain_text(path)
-        tables = parse_pdf_tables(path)
-        parsed_data = {}
-        with open(path + ".decrypt", "r") as file:
-            parsed_data = file.read()
-        # os.remove(path + ".decrypt")
-        return parsed_data, parsed_plaint_text, tables
-    except Exception as e:
-        return None, None, None
+def clear_text(text: str) -> str:
+    cleaned_string = re.sub(r"[^a-zA-Zа-яА-ЯёЁ0-9\s]", "", text)
+    cleaned_string = re.sub(r"\s+", " ", cleaned_string).strip()
+    return cleaned_string.lower().replace("nan", "").replace("unnamed", "")
+
+
+def read_file(file_path: str) -> str:
+    if file_path.endswith(".doc") or file_path.endswith(".docx"):
+        result, pdf_path = convert_to_pdf(file_path)
+        while not pdf_path.exists():
+            print(f"DDDUMP {file_path}")
+
+        print("end convert to pdf {} {}".format(result, file_path))
+        # os.remove(file_path)
+        file_path = file_path.replace(".docx", ".pdf").replace(".doc", ".pdf")
+    print(f"read_file {file_path}")
+    print(os.system("ls resources"))
+    file_bytes = Path(file_path).read_bytes()
+    # os.remove(file_path)
+    ext = file_path.split(".")[-1]
+    text = extract_text_from_file(file_bytes, ext)
+    return clear_text(text)

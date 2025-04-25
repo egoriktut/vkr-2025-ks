@@ -1,9 +1,8 @@
 from typing import List
 
+from db.models import User
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-
-from db.models import User
 from user.schemas import UserBase, UserChangeCredentials, UserHistory
 
 

@@ -1,19 +1,10 @@
 from typing import Any
 
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    Enum,
-    ForeignKey,
-    Integer,
-    String,
-    Text,
-)
-from sqlalchemy.sql import func
-
 from db.database import Base, engine
 from enums import TaskStatus
+from sqlalchemy import (Boolean, Column, DateTime, Enum, ForeignKey, Integer,
+                        String, Text)
+from sqlalchemy.sql import func
 
 
 class User(Base):

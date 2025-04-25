@@ -4,8 +4,15 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel
 
 
+class FileSchema(BaseModel):
+    decrypt: Optional[str]
+    decrypt_plain: Optional[str]
+    pandas_tables: Optional[str]
+
+
 class KSAttributes(BaseModel):
     files: List[dict]
+    files_parsed: List[str]
     auction_id: int
     name: str
     isContractGuaranteeRequired: float | bool
@@ -58,3 +65,10 @@ class Result(BaseModel):
 class AnalysisResultResponse(BaseModel):
     status: str
     result: Optional[Result]
+
+
+class TwoTextsInput(BaseModel):
+    """Схема запроса для двух текстовых строк для вычисления сходства."""
+
+    first: str
+    second: str

@@ -39,7 +39,7 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile.backend
-    command: celery -A celery_app.app worker --loglevel=info
+    command: celery -A celery_app worker --loglevel=info
     environment:
       - REDIS_HOST=redis
     depends_on:

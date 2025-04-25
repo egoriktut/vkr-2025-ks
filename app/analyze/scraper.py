@@ -2,7 +2,6 @@ import json
 from typing import Optional
 
 import requests
-
 from analyze.schemas import KSAttributes
 
 
@@ -33,6 +32,7 @@ class ParserWeb:
                     }
                     for file in result["files"]
                 ],
+                files_parsed=[],
                 name=result["name"],
                 isContractGuaranteeRequired=(
                     result["contractGuaranteeAmount"]

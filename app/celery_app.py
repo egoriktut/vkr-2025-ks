@@ -3,8 +3,18 @@ from typing import Dict, List
 from analyze.schemas import Result, ValidationOption
 from analyze.scraper import ParserWeb
 from analyze.validation import KSValidator
-from celery_app.app import celery_app
+from celery import Celery
 from config import settings
+
+celery_app = Celery("app", broker=settings.BROKER_URL, backend=settings.BACKEND_URL)
+
+celery_app.conf.update(
+    task_serializer="json",
+    result_serializer="json",
+    accept_content=["json"],
+    timezone="UTC",
+    enable_utc=True,
+)
 
 ks_validator = KSValidator(settings.MODEL_URL)
 

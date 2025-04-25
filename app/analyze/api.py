@@ -1,29 +1,27 @@
+import time
 from typing import Dict
 
+from analyze.schemas import (AnalysisResultResponse, AnalyzeUrlRequest,
+                             AnalyzeUrlResponse)
 from celery.result import AsyncResult
+from celery_app import start_analysis_task
 from fastapi import APIRouter
-
-from analyze.schemas import (
-    AnalysisResultResponse,
-    AnalyzeUrlRequest,
-    AnalyzeUrlResponse,
-)
-from celery_app.tasks import start_analysis_task
 
 router = APIRouter()
 
 
-@router.post("/", response_model=AnalyzeUrlResponse)
+@router.post("", response_model=AnalyzeUrlResponse)
 async def analyze_url(request: AnalyzeUrlRequest) -> AnalyzeUrlResponse:
     task_ids: Dict[str, str] = {}
     for url in set(request.urls):
+        # TODO: Проверка с БД
         task = start_analysis_task.delay(url, request.validate_params)
         task_ids[url] = task.id
     return AnalyzeUrlResponse(task_ids=task_ids, status="processing")
 
 
-# Пачкой
-# TODO: Сравнивать с enum
+# TODO: Пачкой
+# TODO: Промежуточные результаты
 @router.get("/{task_id}", response_model=AnalysisResultResponse)
 async def get_analysis_result(task_id: str) -> AnalysisResultResponse:
     task_result = AsyncResult(task_id)

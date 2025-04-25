@@ -109,3 +109,109 @@
 #
 # # Печатаем только текст ответа
 # print(result["response"])
+
+
+import io
+from pathlib import Path
+from typing import Callable, Dict, Union
+from PyPDF2 import PdfReader
+import pandas as pd  # Для Excel
+
+
+
+# --- Функции для извлечения текста ---
+
+def extract_text_from_pdf(pdf_bytes: bytes) -> str:
+    """Извлекает текст из PDF."""
+    pdf_stream = io.BytesIO(pdf_bytes)
+    reader = PdfReader(pdf_stream)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text() + "\n"
+    return text.strip()
+
+
+def extract_text_from_xlsx(xlsx_bytes: bytes) -> str:
+    """Извлекает текст из XLSX (Excel)."""
+    xlsx_stream = io.BytesIO(xlsx_bytes)
+    # Читаем все листы и объединяем текст
+    text = []
+    df_dict = pd.read_excel(xlsx_stream, sheet_name=None)  # Все листы
+    for sheet_name, df in df_dict.items():
+        text.append(f"--- Лист: {sheet_name} ---")
+        text.append(df.to_string(index=False))
+    return "\n".join(text).strip()
+
+
+# --- Роутер для выбора обработчика ---
+
+def extract_text_from_file(file_bytes: bytes, file_extension: str) -> str:
+    """Основная функция для извлечения текста из файла."""
+    handlers: Dict[str, Callable[[bytes], str]] = {
+        ".pdf": extract_text_from_pdf,
+        ".xlsx": extract_text_from_xlsx,
+        ".xls": extract_text_from_xlsx,
+    }
+
+    file_extension = file_extension.lower()
+
+    if file_extension in handlers:
+        return handlers[file_extension](file_bytes)
+    else:
+        raise ValueError(f"Unsupported file type: {file_extension}")
+
+
+# --- Пример использования ---
+
+if __name__ == "__main__":
+    # Тестируем на разных файлах
+    test_files = [
+        ("1.pdf", ".pdf"),
+        ("1.docx", ".docx"),
+        ("1.doc", ".doc"),
+        ("1.xlsx", ".xlsx"),
+    ]
+
+    for filename, ext in test_files:
+        try:
+            file_path = Path(filename)
+            if not file_path.exists():
+                print(f"Файл {filename} не найден, пропускаем...")
+                continue
+
+            file_bytes = file_path.read_bytes()
+            text = extract_text_from_file(file_bytes, ext)
+            print(f"\n--- Текст из {filename} ---\n{text}...")  # Выводим первые 500 символов
+        except Exception as e:
+            print(f"Ошибка при обработке {filename}: {e}")
+#
+
+import subprocess
+from pathlib import Path
+
+def convert_to_pdf(input_path: str) -> str:
+    """
+    Converts DOC/DOCX to PDF using LibreOffice.
+    Returns path to the generated PDF.
+    """
+    input_path = Path(input_path)
+    if not input_path.exists():
+        raise FileNotFoundError(f"Input file not found: {input_path}")
+
+    output_dir = input_path.parent  # Save PDF in the same folder as input
+
+    subprocess.run([
+        "soffice",
+        "--headless",
+        "--convert-to", "pdf",
+        str(input_path),
+        "--outdir", str(output_dir)
+    ])
+
+    # Generated PDF path (e.g., "document.docx" → "document.pdf")
+    pdf_path = output_dir / f"{input_path.stem}.pdf"
+    return str(pdf_path) if pdf_path.exists() else None
+
+# Example usage
+pdf_file = convert_to_pdf("1.doc")
+print(f"PDF generated at: {pdf_file}")

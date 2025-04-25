@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-
 from analyze.api import router as analyze_router
 from auth.api import router as auth_router
 from db.dependencies import get_db
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 from user.api import router as user_router
 
 router = APIRouter()
