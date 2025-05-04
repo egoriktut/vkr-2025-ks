@@ -2,8 +2,16 @@ from typing import Any
 
 from db.database import Base, engine
 from enums import TaskStatus
-from sqlalchemy import (Boolean, Column, DateTime, Enum, ForeignKey, Integer,
-                        String, Text)
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
 from sqlalchemy.sql import func
 
 
@@ -30,9 +38,9 @@ class TaskHistory(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
-    title = Column(String, index=True)
+    url = Column(String)
     description = Column(Text)
-    status = Column(Enum(TaskStatus), default=TaskStatus.PENDING)
+    status = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     completed_at = Column(DateTime(timezone=True))
 

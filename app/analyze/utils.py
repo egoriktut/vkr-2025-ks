@@ -70,7 +70,7 @@ def convert_to_pdf(input_path: str) -> tuple:
             str(output_dir),
         ]
     )
-    # FIXME: ЗАЛУПА ЕБАНАЯ
+
     pdf_path = output_dir / f"{input_path.stem}.pdf"
     return (str(pdf_path) if pdf_path.exists() else None), pdf_path
 
@@ -83,17 +83,11 @@ def clear_text(text: str) -> str:
 
 def read_file(file_path: str) -> str:
     if file_path.endswith(".doc") or file_path.endswith(".docx"):
-        result, pdf_path = convert_to_pdf(file_path)
-        while not pdf_path.exists():
-            print(f"DDDUMP {file_path}")
-
-        print("end convert to pdf {} {}".format(result, file_path))
-        # os.remove(file_path)
+        convert_to_pdf(file_path)
+        os.remove(file_path)
         file_path = file_path.replace(".docx", ".pdf").replace(".doc", ".pdf")
-    print(f"read_file {file_path}")
-    print(os.system("ls resources"))
     file_bytes = Path(file_path).read_bytes()
-    # os.remove(file_path)
+    os.remove(file_path)
     ext = file_path.split(".")[-1]
     text = extract_text_from_file(file_bytes, ext)
     return clear_text(text)

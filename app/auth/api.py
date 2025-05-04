@@ -1,5 +1,9 @@
-from auth.schemas import (ConfirmRegistrationSchema, RegistrationSchema,
-                          ResetPasswordSchema, ResetPasswordSchemaCode)
+from auth.schemas import (
+    ConfirmRegistrationSchema,
+    RegistrationSchema,
+    ResetPasswordSchema,
+    ResetPasswordSchemaCode,
+)
 from auth.services import AuthService
 from db.dependencies import get_db
 from fastapi import APIRouter, Depends, status

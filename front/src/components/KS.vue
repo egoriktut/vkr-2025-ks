@@ -62,7 +62,7 @@ const statusWorker = async (tasks) => {
         console.error(`Error processing task ${task.id}:`, error)
       }
     }
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise(resolve => setTimeout(resolve, 1500))
   }
   canProcess.value = true
 }

@@ -1,8 +1,15 @@
-from auth.schemas import (ConfirmRegistrationSchema, RegistrationSchema,
-                          ResetPasswordSchema)
-from auth.utils import (generate_token, generate_verification_code,
-                        get_password_hash, send_verification_email,
-                        verify_password)
+from auth.schemas import (
+    ConfirmRegistrationSchema,
+    RegistrationSchema,
+    ResetPasswordSchema,
+)
+from auth.utils import (
+    generate_token,
+    generate_verification_code,
+    get_password_hash,
+    send_verification_email,
+    verify_password,
+)
 from db.models import User
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -39,6 +46,11 @@ class AuthService:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email already registered",
+            )
+        if len(credentials.password) < 5:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Small password required",
             )
 
         hashed_password = get_password_hash(credentials.password)
@@ -131,6 +143,11 @@ class AuthService:
                 detail="Invalid verification code",
             )
 
+        if len(configuration.password) < 5:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Small password required",
+            )
         hashed_password = get_password_hash(configuration.password)
         user.hashed_password = hashed_password
         user.verification_code = ""
