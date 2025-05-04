@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import KS from "@/components/KS.vue";
 import Login from "@/components/Login.vue";
+import Account from "@/components/Account.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,10 +17,15 @@ const router = createRouter({
       component: KS,
     },
     {
+      path: '/account',
+      name: 'account',
+      component: Account,
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'redirect',
       redirect: () => {
-        return {path: '/KS'}
+        return {path: '/login'}
       },
     },
   ],

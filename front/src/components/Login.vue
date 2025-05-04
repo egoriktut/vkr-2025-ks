@@ -187,9 +187,9 @@ const errorValid = ref(false);
 const auth = useAuth();
 
 const token = localStorage.getItem("token")
-// if (token) {
-//   router.push("/main")
-// }
+if (token) {
+  router.push("/account")
+}
 
 
 const onSubmit = async () => {
@@ -197,7 +197,7 @@ const onSubmit = async () => {
     if (step.value === "login") {
       const response = await login({ email: username.value, password: password.value });
       auth.setState({ token: response });
-      router.push("/KS");
+      router.push("/account");
 
     } else if (step.value === "register") {
       if (password.value !== confirmPassword.value) {
@@ -210,8 +210,7 @@ const onSubmit = async () => {
 
     } else if (step.value === "code") {
       await confirmCode({ email: username.value, verification_code: confirmationCode.value });
-      router.push("/KS");
-
+      step.value = "login";
     } else if (step.value === "reset") {
       await sendResetCode({ email: username.value }); // новый API
       step.value = "reset-code";

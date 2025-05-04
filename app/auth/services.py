@@ -23,15 +23,18 @@ class AuthService:
 
         if not user:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Пользователь не найден, проверь корректность введенных данных",
             )
         elif not user.activated:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="User not activated"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Пользователь не активирован, проверь корректность введенных данных",
             )
         elif not verify_password(credentials.password, user.hashed_password):
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="bad password"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Неверный пароль, проверь корректность введенных данных",
             )
         elif not user.token:
             user.token = generate_token()
@@ -45,12 +48,12 @@ class AuthService:
         if db.query(User).filter(User.email == credentials.email).first():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already registered",
+                detail="Email уже используется, проверь корректность введенных данных",
             )
         if len(credentials.password) < 5:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Small password required",
+                detail="Слишком короткий пароль, минимум 5 символов",
             )
 
         hashed_password = get_password_hash(credentials.password)
@@ -75,7 +78,8 @@ class AuthService:
         user = db.query(User).filter(User.email == confirmation.email).first()
         if not user:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="user not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Пользователь не найден, проверь корректность введенных данных",
             )
 
         user.verification_code = verification_code
@@ -89,13 +93,14 @@ class AuthService:
         user = db.query(User).filter(User.email == confirmation.email).first()
         if not user:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Пользователь не найден, проверь корректность введенных данных",
             )
 
         if user.verification_code != confirmation.verification_code.strip().upper():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid verification code",
+                detail="Неверный код подтверждения, проверь корректность введенных данных",
             )
 
         user.verification_code = ""
@@ -110,7 +115,8 @@ class AuthService:
         user = db.query(User).filter(User.email == email).first()
         if not user:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Email not registered"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Пользователь не найден, проверь корректность введенных данных",
             )
         verification_code = generate_verification_code()
 
@@ -123,10 +129,10 @@ class AuthService:
     @staticmethod
     def confirm_code(db: Session, configuration: ResetPasswordSchema):
         user = db.query(User).filter(User.email == configuration.email).first()
-        if user.verification_code != configuration.verification_code:
+        if user.verification_code.lower() != configuration.verification_code.lower():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid verification code",
+                detail="Неверный код подтверждения, проверь корректность введенных данных",
             )
         return user
 
@@ -135,18 +141,19 @@ class AuthService:
         user = db.query(User).filter(User.email == configuration.email).first()
         if not user.activated:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="User not activated"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Пользователь не активирован, проверь корректность введенных данных",
             )
         if user.verification_code != configuration.verification_code:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid verification code",
+                detail="Неверный код подтверждения, проверь корректность введенных данных",
             )
 
         if len(configuration.password) < 5:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Small password required",
+                detail="Слишком короткий пароль, минимум 5 символов",
             )
         hashed_password = get_password_hash(configuration.password)
         user.hashed_password = hashed_password

@@ -1,9 +1,11 @@
 <script setup>
 import { RouterView } from 'vue-router'
+import ModalError from '@/components/ModalError.vue';
 </script>
 
 <template>
   <RouterView />
+  <ModalError />
 </template>
 
 <style>

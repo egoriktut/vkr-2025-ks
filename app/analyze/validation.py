@@ -170,8 +170,12 @@ class KSValidator:
 
                 result.append(date_found)
         if all(result):
-            return ValidationOptionResult(status=True, description="Упоминание найдено")
-        return ValidationOptionResult(status=False, description="Упоминание не найдено")
+            return ValidationOptionResult(
+                status=True, description="График поставки совпадает"
+            )
+        return ValidationOptionResult(
+            status=False, description="График поставки не совпадает"
+        )
 
     @staticmethod
     def number_to_words(number: float) -> str:
@@ -194,8 +198,10 @@ class KSValidator:
 
                 pattern = r"размер обеспечения исполнения Контракта составляет\s+\d+(?:\s\d+)*\sрублей\s\d{2}\sкопеек".lower()
                 if re.search(pattern, file_text):
-                    return ValidationOptionResult(status=False, description="")
-            return ValidationOptionResult(status=True, description="")
+                    return ValidationOptionResult(
+                        status=False, description="Упоминание не найдено"
+                    )
+            return ValidationOptionResult(status=True, description="Упоминание найдено")
 
         else:
             for file_text in page_data.files_parsed:
@@ -209,8 +215,12 @@ class KSValidator:
                     + re.escape(expected_text.lower())
                 )
                 if re.search(pattern, file_text):
-                    return ValidationOptionResult(status=True, description="")
-            return ValidationOptionResult(status=False, description="")
+                    return ValidationOptionResult(
+                        status=True, description="Упоминание найдено"
+                    )
+                return ValidationOptionResult(
+                    status=False, description="Упоминание не найдено"
+                )
 
     def validate_naming(self, page_data: KSAttributes) -> ValidationOptionResult:
         for file_text in page_data.files_parsed:
@@ -317,8 +327,12 @@ class KSValidator:
             )
 
             validation_checks.append(len(validated_items) == len(unique_items))
-            return ValidationOptionResult(status=similarity_score <= 5, description="")
-        return ValidationOptionResult(status=False, description="нет ТЗ")
+            return ValidationOptionResult(
+                status=similarity_score <= 5, description="Спецификация совпадает"
+            )
+        return ValidationOptionResult(
+            status=False, description="Спецификация не соответствует"
+        )
 
     @staticmethod
     def validate_license(page_data: KSAttributes):
@@ -331,9 +345,11 @@ class KSValidator:
                 pattern2 = r"\s*сертификат\s*"
                 if re.search(pattern1, file_text) and re.search(pattern2, file_text):
                     ValidationOptionResult(
-                        status=False, description="Найдены совпадения"
+                        status=True, description="Найдены совпадения"
                     )
-            return ValidationOptionResult(status=True, description="не найдено")
+            return ValidationOptionResult(
+                status=False, description="Совпадений не найдено"
+            )
 
         else:
             max_similarity = 0

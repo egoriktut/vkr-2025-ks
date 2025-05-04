@@ -1,18 +1,8 @@
+from datetime import datetime
 from typing import Any
 
 from db.database import Base, engine
-from enums import TaskStatus
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    Enum,
-    ForeignKey,
-    Integer,
-    String,
-    Text,
-)
-from sqlalchemy.sql import func
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 
 
 class User(Base):
@@ -23,7 +13,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     first_name = Column(String)
     last_name = Column(String)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), default=datetime.now())
     verification_code = Column(String)
     activated = Column(Boolean, default=False)
     token = Column(String)
@@ -37,11 +27,13 @@ class TaskHistory(Base):
     __tablename__ = "task_history"
 
     id = Column(Integer, primary_key=True, index=True)
+    ids = Column(String, index=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
     url = Column(String)
     description = Column(Text)
     status = Column(String)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    result = Column(String)
+    created_at = Column(DateTime(timezone=True), default=datetime.now())
     completed_at = Column(DateTime(timezone=True))
 
 

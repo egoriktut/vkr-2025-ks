@@ -9,6 +9,10 @@ RUN apt-get update && apt-get install -y \
     poppler-utils \
     ghostscript \
     libreoffice \
+    tzdata && \
+    ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime && \
+    echo "Europe/Moscow" > /etc/timezone && \
+    dpkg-reconfigure -f noninteractive tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
