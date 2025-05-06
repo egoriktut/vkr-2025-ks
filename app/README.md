@@ -1,33 +1,43 @@
-# to run type check
-mypy app/
+# Документация проекта
 
-## Prerequisites
+## Обзор
 
-1. **Python 3.8+** - Make sure Python and pip are installed.
-2. **Redis** - Celery uses Redis as the message broker. Install it locally or use a Redis instance in the cloud.
+Это веб-приложение на основе FastAPI, предоставляющее функционал для:
+- Анализа URL
+- Аутентификации пользователей
+- Управления аккаунтами
 
-```
-python -m venv .venv
-source venv/bin/activate
-pip install -r requirements.txt
-redis-server
-celery -A app.celery_app worker --loglevel=debug
-```
+Используются:
+- Celery для асинхронной обработки задач
+- SQLAlchemy для работы с базой данных
 
-```
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8090
-```
+## Основные функции
 
-тупо баш, над [README.md](README.md) имется что сразуу стартанет
-./run.sh
+- **Анализ URL**: Отправка URL для анализа и получение результатов
+- **Аутентификация**: Регистрация, вход, подтверждение email, сброс пароля
+- **Управление аккаунтом**: Просмотр и обновление данных пользователя
+- **История задач**: Просмотр и управление предыдущими задачами анализа
 
+## API endpoints
 
+### Аутентификация (`/auth`)
 
+- `POST /register`: Регистрация нового пользователя
+- `PUT /login`: Вход с учетными данными
+- `PUT /confirm_registration`: Подтверждение регистрации кодом
+- `PUT /resend_code`: Повторная отправка кода подтверждения
+- `PUT /reset_password`: Сброс пароля
+- `PUT /confirm_code`: Подтверждение кода сброса пароля
+- `PUT /reset_password_code`: Запрос кода для сброса пароля
 
-для винды лохов надо подргомуу
-celery -A app.celery_app worker --pool=solo --loglevel=info
+### Анализ URL (`/analyze`)
 
-Ребилд 
-```
-docker-compose build --no-cache app
-```
+- `POST /`: Отправка URL для анализа
+- `GET /`: Получение всех задач текущего пользователя
+- `GET /send_task/{task_ids}`: Отправка результатов на email
+- `DELETE /clear_task_history`: Очистка истории задач
+
+### Управление пользователем (`/user`)
+
+- `GET /account`: Получение информации о текущем пользователе
+- `PUT /account`: Обновление учетных данных
