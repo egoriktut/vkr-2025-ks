@@ -1,6 +1,6 @@
 import os
 import sys
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -25,7 +25,7 @@ class TestUtils:
     """Тесты для вспомогательных функций"""
 
     @pytest.mark.asyncio
-    @patch('api.utils.security')
+    @patch("api.utils.security")
     async def test_get_current_token_success(self, mock_security):
         """Тест успешного получения токена из заголовков"""
         # Мокаем credentials
@@ -40,18 +40,18 @@ class TestUtils:
         assert result == "test_token"
 
     @pytest.mark.asyncio
-    @patch('api.utils.security')
+    @patch("api.utils.security")
     async def test_get_current_token_missing(self, mock_security):
         """Тест отсутствия токена в заголовках"""
         # Создаем асинхронный mock, который вызывает исключение
         mock_security.return_value = AsyncMock()
         mock_security.return_value.side_effect = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
         )
 
         with pytest.raises(AttributeError) as exc_info:
             await get_current_token(credentials=None)
+
 
 # Тесты для api.py
 class TestAPI:
