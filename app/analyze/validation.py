@@ -328,7 +328,8 @@ class KSValidator:
 
             validation_checks.append(len(validated_items) == len(unique_items))
             return ValidationOptionResult(
-                status=similarity_score <= 5, description="Спецификация совпадает"
+                status=similarity_score <= 5,
+                description=f"Спецификация {'не ' if similarity_score > 5 else ''}совпадает",
             )
         return ValidationOptionResult(
             status=False, description="Спецификация не соответствует"

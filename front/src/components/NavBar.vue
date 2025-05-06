@@ -7,7 +7,7 @@
             class="nav-label"
             :class="{ 'active-tab': route.path === '/KS' }"
           >
-            Катировочные сессии
+            Котировочные сессии
           </VLabel>
         </RouterLink>
 

@@ -45,15 +45,15 @@ class AuthService:
 
     @staticmethod
     def register_user(db: Session, credentials: RegistrationSchema):
-        if db.query(User).filter(User.email == credentials.email).first():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email уже используется, проверь корректность введенных данных",
-            )
         if len(credentials.password) < 5:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Слишком короткий пароль, минимум 5 символов",
+            )
+        if db.query(User).filter(User.email == credentials.email).first():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email уже используется, проверь корректность введенных данных",
             )
 
         hashed_password = get_password_hash(credentials.password)

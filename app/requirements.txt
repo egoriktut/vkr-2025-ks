@@ -19,3 +19,5 @@ passlib
 bcrypt
 openpyxl
 PyPDF2
+xlrd
+pytest-cov

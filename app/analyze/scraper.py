@@ -92,10 +92,11 @@ class FilesProcessor:
         return self.parse_file_data(file_name, auction_id)
 
     def generate_parsed_files_data(self, page_data: KSAttributes):
-        for file in page_data.files:
-            page_data.files_parsed.append(
-                self.process_file(
-                    file["downloads_link"], file["name"], page_data.auction_id
+        if page_data:
+            for file in page_data.files:
+                page_data.files_parsed.append(
+                    self.process_file(
+                        file["downloads_link"], file["name"], page_data.auction_id
+                    )
                 )
-            )
-        return page_data
+            return page_data
