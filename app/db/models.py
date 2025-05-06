@@ -2,7 +2,15 @@ from datetime import datetime
 from typing import Any
 
 from db.database import Base, engine
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
 
 
 class User(Base):

@@ -73,7 +73,9 @@ class AuthService:
         return new_user
 
     @staticmethod
-    def resend_verification_code(db: Session, confirmation: RegistrationSchema):
+    def resend_verification_code(
+        db: Session, confirmation: RegistrationSchema
+    ):
         verification_code = generate_verification_code()
         user = db.query(User).filter(User.email == confirmation.email).first()
         if not user:
@@ -89,7 +91,9 @@ class AuthService:
         send_verification_email(confirmation.email, verification_code)
 
     @staticmethod
-    def confirm_registration(db: Session, confirmation: ConfirmRegistrationSchema):
+    def confirm_registration(
+        db: Session, confirmation: ConfirmRegistrationSchema
+    ):
         user = db.query(User).filter(User.email == confirmation.email).first()
         if not user:
             raise HTTPException(
@@ -97,7 +101,10 @@ class AuthService:
                 detail="Пользователь не найден, проверь корректность введенных данных",
             )
 
-        if user.verification_code != confirmation.verification_code.strip().upper():
+        if (
+            user.verification_code
+            != confirmation.verification_code.strip().upper()
+        ):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Неверный код подтверждения, проверь корректность введенных данных",
@@ -129,7 +136,10 @@ class AuthService:
     @staticmethod
     def confirm_code(db: Session, configuration: ResetPasswordSchema):
         user = db.query(User).filter(User.email == configuration.email).first()
-        if user.verification_code.lower() != configuration.verification_code.lower():
+        if (
+            user.verification_code.lower()
+            != configuration.verification_code.lower()
+        ):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Неверный код подтверждения, проверь корректность введенных данных",

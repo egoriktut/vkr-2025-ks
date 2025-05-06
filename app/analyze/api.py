@@ -8,7 +8,6 @@ from analyze.api_utils import (
     send_task_email,
 )
 from analyze.schemas import (
-    AnalysisResultResponse,
     AnalyzeUrlRequest,
     AnalyzeUrlResponse,
 )

@@ -55,7 +55,12 @@ def mock_page_data():
     return KSAttributes(
         auction_id=123,
         name="Test Purchase",
-        files=[{"name": "test.pdf", "downloads_link": "http://example.com/test.pdf"}],
+        files=[
+            {
+                "name": "test.pdf",
+                "downloads_link": "http://example.com/test.pdf",
+            }
+        ],
         files_parsed=["Test document content"],
         isContractGuaranteeRequired=True,
         isLicenseProduction=False,
@@ -121,20 +126,26 @@ class TestKSValidator:
         )
 
         assert len(results) == 6
-        assert all(isinstance(v, ValidationOptionResult) for v in results.values())
+        assert all(
+            isinstance(v, ValidationOptionResult) for v in results.values()
+        )
 
     def test_validate_naming(self, mock_page_data):
         """Тест валидации наименования"""
         validator = KSValidator("url")
 
         with patch.object(
-            validator.model_requests, "check_similarity_transformer", return_value=0.85
+            validator.model_requests,
+            "check_similarity_transformer",
+            return_value=0.85,
         ):
             result = validator.validate_naming(mock_page_data)
             assert result.status is True
 
         with patch.object(
-            validator.model_requests, "check_similarity_transformer", return_value=0.65
+            validator.model_requests,
+            "check_similarity_transformer",
+            return_value=0.65,
         ):
             with patch.object(
                 validator.model_requests,
@@ -145,7 +156,9 @@ class TestKSValidator:
                 assert result.status is True
 
         with patch.object(
-            validator.model_requests, "check_similarity_transformer", return_value=0.65
+            validator.model_requests,
+            "check_similarity_transformer",
+            return_value=0.65,
         ):
             with patch.object(
                 validator.model_requests,
@@ -159,7 +172,9 @@ class TestKSValidator:
                     assert result.status is True
 
         with patch.object(
-            validator.model_requests, "check_similarity_transformer", return_value=0.65
+            validator.model_requests,
+            "check_similarity_transformer",
+            return_value=0.65,
         ):
             with patch.object(
                 validator.model_requests,
@@ -167,7 +182,9 @@ class TestKSValidator:
                 return_value=5,
             ):
                 with patch.object(
-                    validator.model_requests, "llama_prompt", return_value=False
+                    validator.model_requests,
+                    "llama_prompt",
+                    return_value=False,
                 ):
                     result = validator.validate_naming(mock_page_data)
                     assert result.status is False
@@ -176,7 +193,9 @@ class TestKSValidator:
         """Тест валидации цены"""
         validator = KSValidator("url")
 
-        with patch.object(validator.model_requests, "llama_prompt", return_value=False):
+        with patch.object(
+            validator.model_requests, "llama_prompt", return_value=False
+        ):
             result = validator.validate_price(mock_page_data)
             assert result.status is False
 
@@ -239,7 +258,9 @@ class TestAPIUtils:
 
     @patch("analyze.scraper.ParserWeb")
     @patch("analyze.scraper.FilesProcessor")
-    def test_process_data(self, mock_files_processor, mock_parser_web, mock_page_data):
+    def test_process_data(
+        self, mock_files_processor, mock_parser_web, mock_page_data
+    ):
         """Тест обработки данных"""
         mock_parser = MagicMock()
         mock_parser.fetch_and_parse.return_value = mock_page_data
@@ -258,11 +279,16 @@ class TestAPIUtils:
     def test_create_new_tasks(self, mock_session, mock_page_data, mock_user):
         """Тест создания новых задач"""
         db = MagicMock(spec=Session)
-        db.query.return_value.filter.return_value.first.return_value = mock_user
+        db.query.return_value.filter.return_value.first.return_value = (
+            mock_user
+        )
 
         task_ids = {"http://example.com/123": "task123"}
         create_new_tasks(
-            {"http://example.com/123": mock_page_data}, task_ids, db, "test_token"
+            {"http://example.com/123": mock_page_data},
+            task_ids,
+            db,
+            "test_token",
         )
 
         db.add.assert_called()

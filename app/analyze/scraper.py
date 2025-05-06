@@ -69,13 +69,17 @@ class FilesProcessor:
         pass
 
     @staticmethod
-    def download_file(download_link: str, file_name: str, auction_id: int) -> None:
+    def download_file(
+        download_link: str, file_name: str, auction_id: int
+    ) -> None:
         response = requests.get(download_link, stream=True)
         response.raise_for_status()
 
         os.makedirs(DIR_NAME, exist_ok=True)
 
-        file_path = FILE_PATH.format(auction_id=auction_id, file_name=file_name)
+        file_path = FILE_PATH.format(
+            auction_id=auction_id, file_name=file_name
+        )
         with open(file_path, "wb") as file:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
@@ -83,7 +87,9 @@ class FilesProcessor:
 
     @staticmethod
     def parse_file_data(file_name: str, auction_id: int) -> str:
-        file_path = FILE_PATH.format(auction_id=auction_id, file_name=file_name)
+        file_path = FILE_PATH.format(
+            auction_id=auction_id, file_name=file_name
+        )
         file_text = read_file(file_path)
         return file_text
 
@@ -96,7 +102,9 @@ class FilesProcessor:
             for file in page_data.files:
                 page_data.files_parsed.append(
                     self.process_file(
-                        file["downloads_link"], file["name"], page_data.auction_id
+                        file["downloads_link"],
+                        file["name"],
+                        page_data.auction_id,
                     )
                 )
             return page_data

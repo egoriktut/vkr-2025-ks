@@ -6,7 +6,9 @@ from analyze.validation import KSValidator
 from celery import Celery
 from config import settings
 
-celery_app = Celery("app", broker=settings.BROKER_URL, backend=settings.BACKEND_URL)
+celery_app = Celery(
+    "app", broker=settings.BROKER_URL, backend=settings.BACKEND_URL
+)
 
 celery_app.conf.update(
     task_serializer="json",

@@ -34,7 +34,9 @@ def mock_user():
 
 @pytest.fixture
 def user_change_credentials():
-    return UserChangeCredentials(first_name="NewFirstName", last_name="NewLastName")
+    return UserChangeCredentials(
+        first_name="NewFirstName", last_name="NewLastName"
+    )
 
 
 @pytest.fixture
@@ -94,7 +96,9 @@ class TestUserService:
         mock_db_session.commit.assert_called_once()
         mock_db_session.refresh.assert_called_once_with(mock_user)
 
-    def test_change_credentials_partial_update(self, mock_db_session, mock_user):
+    def test_change_credentials_partial_update(
+        self, mock_db_session, mock_user
+    ):
         """Тест частичного обновления данных пользователя"""
         partial_data = UserChangeCredentials(
             first_name="OnlyFirstName", last_name="OnlyLastName"

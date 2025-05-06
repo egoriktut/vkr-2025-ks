@@ -21,11 +21,13 @@ class ModelRequest:
     def ping(self) -> Dict:
         return requests.get(self.model_url).json()
 
-    def post_request(self, url_path: str, data: TwoTextsInput) -> Optional[str]:
+    def post_request(
+        self, url_path: str, data: TwoTextsInput
+    ) -> Optional[str]:
         try:
-            return requests.post(f"{self.model_url}/{url_path}", json=data).json()[
-                "result"
-            ]
+            return requests.post(
+                f"{self.model_url}/{url_path}", json=data
+            ).json()["result"]
         except (KeyError, TimeoutError) as error:
             print(error)
             return None
@@ -35,11 +37,15 @@ class ModelRequest:
         return result.lower() == "yes"
 
     def check_similarity_transformer(self, data: TwoTextsInput) -> float:
-        result = self.post_request("check_similarity_transformer", data.model_dump())
+        result = self.post_request(
+            "check_similarity_transformer", data.model_dump()
+        )
         return float(result) if result is not None else None
 
     def check_similarity2_transformer(self, data: TwoTextsInput) -> float:
-        result = self.post_request("check_similarity2_transformer", data.model_dump())
+        result = self.post_request(
+            "check_similarity2_transformer", data.model_dump()
+        )
         return float(result) if result is not None else None
 
 
@@ -61,21 +67,27 @@ class KSValidator:
             ValidationOption.VALIDATE_SPECIFICATIONS: self.validate_specifications,
         }
 
-    def validate_content(self, page_data, validate_params: List[ValidationOption]):
+    def validate_content(
+        self, page_data, validate_params: List[ValidationOption]
+    ):
         return {
             option: self.validation_checks[option](page_data)
             for option in validate_params
             if option in self.validation_checks
         }
 
-    def validate_price(self, page_data: KSAttributes) -> ValidationOptionResult:
+    def validate_price(
+        self, page_data: KSAttributes
+    ) -> ValidationOptionResult:
         for file_text in page_data.files_parsed:
             if not file_text:
                 continue
             pattern = r"\b(цена(?:ми|х|м|ми|у|ы|е|ой|ю)?|стоимость(?:ю|и|ям|ей|ями)?)\b"
             matches = [
                 (match.start(), match.group())
-                for match in re.finditer(pattern, file_text, flags=re.IGNORECASE)
+                for match in re.finditer(
+                    pattern, file_text, flags=re.IGNORECASE
+                )
             ]
             prompts = []
             for position, match in matches:
@@ -98,10 +110,14 @@ class KSValidator:
                     )
                 else:
                     continue
-        return ValidationOptionResult(status=False, description="Упоминание не найдено")
+        return ValidationOptionResult(
+            status=False, description="Упоминание не найдено"
+        )
 
     @staticmethod
-    def validate_delivery_graphic(page_data: KSAttributes) -> ValidationOptionResult:
+    def validate_delivery_graphic(
+        page_data: KSAttributes,
+    ) -> ValidationOptionResult:
         result = []
         for delivery in page_data.deliveries:
             date_start_raw = delivery["periodDateFrom"]
@@ -113,10 +129,14 @@ class KSValidator:
             date_start, date_end = None, None
             date_found = False
             try:
-                if isinstance(day_start_raw, int) and isinstance(day_end_raw, int):
+                if isinstance(day_start_raw, int) and isinstance(
+                    day_end_raw, int
+                ):
                     duration = abs(day_end_raw - day_start_raw)
 
-                if isinstance(date_start_raw, str) and isinstance(date_end_raw, str):
+                if isinstance(date_start_raw, str) and isinstance(
+                    date_end_raw, str
+                ):
                     date_start = datetime.strptime(date_start_raw, date_format)
                     date_end = datetime.strptime(date_end_raw, date_format)
                     duration = abs((date_start - date_end).days)
@@ -161,9 +181,7 @@ class KSValidator:
                     if duration_matches:
                         date_found = True
                         break
-                duration_pattern = (
-                    rf"{duration // 28}\s*(?:[^\s\d].{{0,40}})?\s*(дней|дня|день)"
-                )
+                duration_pattern = rf"{duration // 28}\s*(?:[^\s\d].{{0,40}})?\s*(дней|дня|день)"
                 duration_matches = re.findall(duration_pattern, file_text)
                 if duration_matches:
                     date_found = True
@@ -201,7 +219,9 @@ class KSValidator:
                     return ValidationOptionResult(
                         status=False, description="Упоминание не найдено"
                     )
-            return ValidationOptionResult(status=True, description="Упоминание найдено")
+            return ValidationOptionResult(
+                status=True, description="Упоминание найдено"
+            )
 
         else:
             for file_text in page_data.files_parsed:
@@ -222,19 +242,25 @@ class KSValidator:
                     status=False, description="Упоминание не найдено"
                 )
 
-    def validate_naming(self, page_data: KSAttributes) -> ValidationOptionResult:
+    def validate_naming(
+        self, page_data: KSAttributes
+    ) -> ValidationOptionResult:
         for file_text in page_data.files_parsed:
             if not file_text:
                 continue
 
             target_phrase_start = "ТЕХНИЧЕСКОЕ ЗАДАНИЕ"
-            match_start = re.search(target_phrase_start, file_text[:250], re.IGNORECASE)
+            match_start = re.search(
+                target_phrase_start, file_text[:250], re.IGNORECASE
+            )
             start_index = 0
             if match_start:
                 start_index = match_start.start() + len(target_phrase_start)
 
             target_phrase_end = "Общая информация об объекте закупки"
-            match_end = re.search(target_phrase_end, file_text[:250], re.IGNORECASE)
+            match_end = re.search(
+                target_phrase_end, file_text[:250], re.IGNORECASE
+            )
             end_index = start_index + len(page_data.name) + 100
             if match_end:
                 end_index = match_end.start()
@@ -244,7 +270,8 @@ class KSValidator:
             )
 
             similarity_score_fuzz = fuzz.partial_ratio(
-                page_data.name.lower(), file_text[start_index:end_index].lower()
+                page_data.name.lower(),
+                file_text[start_index:end_index].lower(),
             )
             if similarity_score_fuzz > 70:
                 return ValidationOptionResult(
@@ -271,9 +298,13 @@ class KSValidator:
             if llama_verdict:
                 return ValidationOptionResult(status=True, description=f"LLM")
 
-        return ValidationOptionResult(status=False, description="Упоминания не найдено")
+        return ValidationOptionResult(
+            status=False, description="Упоминания не найдено"
+        )
 
-    def validate_specifications(self, api_data: KSAttributes) -> ValidationOptionResult:
+    def validate_specifications(
+        self, api_data: KSAttributes
+    ) -> ValidationOptionResult:
         validation_checks = []
         for file, file_text in zip(api_data.files, api_data.files_parsed):
             if not (
@@ -290,7 +321,12 @@ class KSValidator:
             from collections import defaultdict
 
             aggregated_items = defaultdict(
-                lambda: {"sum": 0.0, "quantity": 0.0, "costPerUnit": 0.0, "name": ""}
+                lambda: {
+                    "sum": 0.0,
+                    "quantity": 0.0,
+                    "costPerUnit": 0.0,
+                    "name": "",
+                }
             )
 
             for delivery in deliveries:
@@ -305,7 +341,9 @@ class KSValidator:
 
             validated_items: List = []
 
-            normalized_text = re.sub(r'[^a-zA-Zа-яА-Я0-9.,;:"\'\s-]', "", file_text)
+            normalized_text = re.sub(
+                r'[^a-zA-Zа-яА-Я0-9.,;:"\'\s-]', "", file_text
+            )
             normalized_text = re.sub(r"\s+", " ", normalized_text)
             full_pdf_spec_str = normalized_text.strip()
 
@@ -319,11 +357,14 @@ class KSValidator:
             unique_items_str = normalized_text.strip()
 
             pairs_compare = TwoTextsInput(
-                first=unique_items_str.lower(), second=full_pdf_spec_str.lower()
+                first=unique_items_str.lower(),
+                second=full_pdf_spec_str.lower(),
             )
 
-            similarity_score = self.model_requests.check_similarity2_transformer(
-                pairs_compare
+            similarity_score = (
+                self.model_requests.check_similarity2_transformer(
+                    pairs_compare
+                )
             )
 
             validation_checks.append(len(validated_items) == len(unique_items))
@@ -344,7 +385,9 @@ class KSValidator:
                     continue
                 pattern1 = r"\s*лицензи\s*"
                 pattern2 = r"\s*сертификат\s*"
-                if re.search(pattern1, file_text) and re.search(pattern2, file_text):
+                if re.search(pattern1, file_text) and re.search(
+                    pattern2, file_text
+                ):
                     ValidationOptionResult(
                         status=True, description="Найдены совпадения"
                     )
@@ -365,7 +408,9 @@ class KSValidator:
                 ]
                 for index in licenses_indices + certificate_indices:
                     start_index = max(0, index - 5)
-                    end_index = min(len(file_text), index + len(license_text) - 5)
+                    end_index = min(
+                        len(file_text), index + len(license_text) - 5
+                    )
                     substring = file_text[start_index:end_index]
                     similarity_score = fuzz.partial_ratio(
                         license_text.lower(), substring.lower()

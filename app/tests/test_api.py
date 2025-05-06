@@ -46,7 +46,8 @@ class TestUtils:
         # Создаем асинхронный mock, который вызывает исключение
         mock_security.return_value = AsyncMock()
         mock_security.return_value.side_effect = HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
         )
 
         with pytest.raises(AttributeError) as exc_info:

@@ -13,12 +13,16 @@ router = APIRouter()
 
 
 @router.put("/login", status_code=status.HTTP_200_OK)
-async def login(credentials: RegistrationSchema, db: Session = Depends(get_db)):
+async def login(
+    credentials: RegistrationSchema, db: Session = Depends(get_db)
+):
     return AuthService.login_user(db, credentials)
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register(credentials: RegistrationSchema, db: Session = Depends(get_db)):
+async def register(
+    credentials: RegistrationSchema, db: Session = Depends(get_db)
+):
     AuthService.register_user(db, credentials)
     return {
         "message": "Registration successful. Please check your email for verification code."
@@ -30,13 +34,19 @@ async def confirm_register(
     confirmation: ConfirmRegistrationSchema, db: Session = Depends(get_db)
 ):
     AuthService.confirm_registration(db, confirmation)
-    return {"message": "Registration confirmed successfully. You can now login."}
+    return {
+        "message": "Registration confirmed successfully. You can now login."
+    }
 
 
 @router.put("/resend_code")
-async def resend_code(confirmation: RegistrationSchema, db: Session = Depends(get_db)):
+async def resend_code(
+    confirmation: RegistrationSchema, db: Session = Depends(get_db)
+):
     AuthService.resend_verification_code(db, confirmation)
-    return {"message": "Registration confirmed successfully. You can now login."}
+    return {
+        "message": "Registration confirmed successfully. You can now login."
+    }
 
 
 @router.put("/reset_password")

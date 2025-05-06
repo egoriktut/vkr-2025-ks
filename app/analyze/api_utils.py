@@ -40,7 +40,9 @@ def create_new_tasks(
 
 
 async def process_task(user_id: int, db: Session):
-    user_tasks = db.query(TaskHistory).filter(TaskHistory.user_id == user_id).all()
+    user_tasks = (
+        db.query(TaskHistory).filter(TaskHistory.user_id == user_id).all()
+    )
     for task in user_tasks:
         task_result = AsyncResult(task.ids)
         task.status = task_result.status
@@ -56,7 +58,9 @@ async def get_tasks_by_user_token(db: Session, token: str):
     user = db.query(User).filter(User.token == token).first()
     user_id = user.id
     await process_task(user_id=user_id, db=db)
-    user_tasks = db.query(TaskHistory).filter(TaskHistory.user_id == user_id).all()
+    user_tasks = (
+        db.query(TaskHistory).filter(TaskHistory.user_id == user_id).all()
+    )
     return user_tasks
 
 

@@ -36,18 +36,24 @@ from db.models import User
 # Фикстуры для тестовых данных
 @pytest.fixture
 def registration_data():
-    return RegistrationSchema(email="test@example.com", password="securepassword123")
+    return RegistrationSchema(
+        email="test@example.com", password="securepassword123"
+    )
 
 
 @pytest.fixture
 def confirm_registration_data():
-    return ConfirmRegistrationSchema(email="test@example.com", verification_code="ABCD")
+    return ConfirmRegistrationSchema(
+        email="test@example.com", verification_code="ABCD"
+    )
 
 
 @pytest.fixture
 def reset_password_data():
     return ResetPasswordSchema(
-        email="test@example.com", verification_code="ABCD", password="newpassword123"
+        email="test@example.com",
+        verification_code="ABCD",
+        password="newpassword123",
     )
 
 
@@ -85,7 +91,9 @@ class TestAuthService:
     """Тесты для сервиса аутентификации"""
 
     @patch("auth.services.send_verification_email")
-    def test_register_user_success(self, mock_send_email, registration_data, mock_user):
+    def test_register_user_success(
+        self, mock_send_email, registration_data, mock_user
+    ):
         """Тест успешной регистрации пользователя"""
         db = MagicMock(spec=Session)
         db.query.return_value.filter.return_value.first.return_value = None
@@ -105,7 +113,9 @@ class TestAuthService:
     def test_register_user_email_exists(self, registration_data, mock_user):
         """Тест регистрации с существующим email"""
         db = MagicMock(spec=Session)
-        db.query.return_value.filter.return_value.first.return_value = mock_user
+        db.query.return_value.filter.return_value.first.return_value = (
+            mock_user
+        )
 
         with pytest.raises(HTTPException) as exc_info:
             AuthService.register_user(db, registration_data)
@@ -129,7 +139,9 @@ class TestAuthService:
     def test_login_user_success(self, registration_data, activated_user):
         """Тест успешного входа"""
         db = MagicMock(spec=Session)
-        db.query.return_value.filter.return_value.first.return_value = activated_user
+        db.query.return_value.filter.return_value.first.return_value = (
+            activated_user
+        )
 
         token = AuthService.login_user(db, registration_data)
 
@@ -149,7 +161,9 @@ class TestAuthService:
     def test_login_user_not_activated(self, registration_data, mock_user):
         """Тест входа неактивированного пользователя"""
         db = MagicMock(spec=Session)
-        db.query.return_value.filter.return_value.first.return_value = mock_user
+        db.query.return_value.filter.return_value.first.return_value = (
+            mock_user
+        )
 
         with pytest.raises(HTTPException) as exc_info:
             AuthService.login_user(db, registration_data)
@@ -157,10 +171,14 @@ class TestAuthService:
         assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
         assert "Пользователь не активирован" in str(exc_info.value.detail)
 
-    def test_login_user_wrong_password(self, registration_data, activated_user):
+    def test_login_user_wrong_password(
+        self, registration_data, activated_user
+    ):
         """Тест входа с неверным паролем"""
         db = MagicMock(spec=Session)
-        db.query.return_value.filter.return_value.first.return_value = activated_user
+        db.query.return_value.filter.return_value.first.return_value = (
+            activated_user
+        )
         registration_data.password = "wrongpassword"
 
         with pytest.raises(HTTPException) as exc_info:
@@ -175,7 +193,9 @@ class TestAuthService:
     ):
         """Тест повторной отправки кода подтверждения"""
         db = MagicMock(spec=Session)
-        db.query.return_value.filter.return_value.first.return_value = mock_user
+        db.query.return_value.filter.return_value.first.return_value = (
+            mock_user
+        )
 
         AuthService.resend_verification_code(db, registration_data)
 
@@ -183,12 +203,18 @@ class TestAuthService:
         mock_send_email.assert_called_once()
         db.commit.assert_called_once()
 
-    def test_confirm_registration_success(self, confirm_registration_data, mock_user):
+    def test_confirm_registration_success(
+        self, confirm_registration_data, mock_user
+    ):
         """Тест успешного подтверждения регистрации"""
         db = MagicMock(spec=Session)
-        db.query.return_value.filter.return_value.first.return_value = mock_user
+        db.query.return_value.filter.return_value.first.return_value = (
+            mock_user
+        )
 
-        result = AuthService.confirm_registration(db, confirm_registration_data)
+        result = AuthService.confirm_registration(
+            db, confirm_registration_data
+        )
 
         assert result.activated is True
         assert result.verification_code == ""
@@ -199,7 +225,9 @@ class TestAuthService:
     ):
         """Тест подтверждения с неверным кодом"""
         db = MagicMock(spec=Session)
-        db.query.return_value.filter.return_value.first.return_value = mock_user
+        db.query.return_value.filter.return_value.first.return_value = (
+            mock_user
+        )
         confirm_registration_data.verification_code = "WRONG"
 
         with pytest.raises(HTTPException) as exc_info:
@@ -214,9 +242,13 @@ class TestAuthService:
     ):
         """Тест отправки кода для сброса пароля"""
         db = MagicMock(spec=Session)
-        db.query.return_value.filter.return_value.first.return_value = activated_user
+        db.query.return_value.filter.return_value.first.return_value = (
+            activated_user
+        )
 
-        AuthService.send_code_verification_email(db, reset_password_code_data.email)
+        AuthService.send_code_verification_email(
+            db, reset_password_code_data.email
+        )
 
         mock_send_email.assert_called_once()
         db.commit.assert_called_once()
@@ -225,11 +257,15 @@ class TestAuthService:
         """Тест успешного сброса пароля"""
         db = MagicMock(spec=Session)
         activated_user.verification_code = "ABCD"
-        db.query.return_value.filter.return_value.first.return_value = activated_user
+        db.query.return_value.filter.return_value.first.return_value = (
+            activated_user
+        )
 
         result = AuthService.reset_password(db, reset_password_data)
 
-        assert verify_password(reset_password_data.password, result.hashed_password)
+        assert verify_password(
+            reset_password_data.password, result.hashed_password
+        )
         assert result.verification_code == ""
         db.commit.assert_called_once()
 

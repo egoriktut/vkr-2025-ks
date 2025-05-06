@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-
 from model_llama import LLAMA
 from model_sentence_transformers import TransformerC
 from schemas import TwoTextsInput
@@ -26,7 +25,9 @@ async def llama_prompt(data: TwoTextsInput):
 @router.post("/check_similarity_transformer")
 async def check_similarity_transformer(data: TwoTextsInput):
     """Расчет косинусного сходства между двумя текстами с помощью Sentence Transformers."""
-    similarity = model_transformer.check_similarity_transformer(data.first, data.second)
+    similarity = model_transformer.check_similarity_transformer(
+        data.first, data.second
+    )
     return {"result": similarity}
 
 

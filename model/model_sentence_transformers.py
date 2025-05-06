@@ -63,7 +63,9 @@ class TransformerC:
         interface_embedding = self.model.encode(first, convert_to_tensor=True)
         td_embedding = self.model.encode(second, convert_to_tensor=True)
 
-        similarity_score = util.cos_sim(interface_embedding, td_embedding).item()
+        similarity_score = util.cos_sim(
+            interface_embedding, td_embedding
+        ).item()
 
         return similarity_score
 
