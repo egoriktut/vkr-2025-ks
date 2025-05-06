@@ -21,3 +21,4 @@ openpyxl
 PyPDF2
 xlrd
 pytest-cov
+pytest-asyncio
