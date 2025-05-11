@@ -1,7 +1,6 @@
 from typing import Dict, List
 
 from analyze.schemas import KSAttributes, Result, ValidationOption
-from analyze.scraper import ParserWeb
 from analyze.validation import KSValidator
 from celery import Celery
 from config import settings

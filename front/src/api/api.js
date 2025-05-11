@@ -5,7 +5,6 @@ const api = axios.create({
   baseURL: 'https://egoriktut.ru/api_ks_app/v1/',
   headers: {
     'Content-Type': 'application/json',
-    // "token": localStorage.getItem('token'),
   },
 });
 
