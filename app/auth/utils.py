@@ -98,18 +98,20 @@ def generate_html_report(task_data, analysis_data: dict) -> str:
 
     # Подсчитываем результаты анализа
     total_checks = len(analysis_data["analysis"])
+    for item in analysis_data["analysis"].values():
+        print(item)
     passed_checks = sum(
         1 for item in analysis_data["analysis"].values() if item["status"]
     )
 
     # Получаем названия критериев (замените на свои)
     criteria_names = {
-        1: "Наименование закупки совпадает с наименованием в техническом задании и/или в проекте контракта",
-        2: "Обеспечение исполнения контракта - требуется",
-        3: "Наличие сертификатов/лицензий",
-        4: "График поставки И этап поставки",
-        5: "Максимальное значение цены контракта ИЛИ начальная цена",
-        6: "Спецификации",
+        '1': "Наименование закупки совпадает с наименованием в техническом задании и/или в проекте контракта",
+        '2': "Обеспечение исполнения контракта - требуется",
+        '3': "Наличие сертификатов/лицензий",
+        '4': "График поставки И этап поставки",
+        '5': "Максимальное значение цены контракта ИЛИ начальная цена",
+        '6': "Спецификации",
     }
 
     # Генерируем HTML
@@ -217,6 +219,11 @@ def generate_html_report(task_data, analysis_data: dict) -> str:
                 color: #155724;
                 border: 1px solid #c3e6cb;
             }}
+            .summary-invalid {{
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f8d7da;
+            }}
         </style>
     </head>
     <body>
@@ -226,12 +233,12 @@ def generate_html_report(task_data, analysis_data: dict) -> str:
 
         <div class="report-container">
             <div class="task-info">
-                <h2>{task_data.description} <span class="status-badge status-success">{task_data.status}</span></h2>
+                <h2>{task_data.description} </h2>
                 <div class="timestamp">Дата проверки: {completed_at.strftime('%d.%m.%Y %H:%M:%S')}</div>
                 <a href="{analysis_data['url']}" class="task-url" target="_blank">{analysis_data['url']}</a>
 
-                <div class="summary {'summary-valid' if passed_checks > total_checks / 2 else 'summary-invalid'}">
-                    {'✓' if passed_checks > total_checks / 2 else '✗'} Результат: {passed_checks} из {total_checks} критериев выполнено
+                <div class="summary {'summary-valid' if passed_checks == total_checks else 'summary-invalid'}">
+                    {'✓' if passed_checks == total_checks else '✗'} Результат: {passed_checks} из {total_checks} критериев выполнено
                 </div>
             </div>
 
@@ -253,6 +260,7 @@ def generate_html_report(task_data, analysis_data: dict) -> str:
 def generate_analysis_items(analysis: dict, criteria_names: dict) -> str:
     """Генерирует HTML для пунктов анализа"""
     items_html = ""
+    print(analysis)
     for key, item in analysis.items():
         criteria_name = criteria_names.get(key, f"Критерий {key}")
         icon_class = "icon-valid" if item["status"] else "icon-invalid"

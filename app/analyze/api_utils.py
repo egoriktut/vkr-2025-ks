@@ -33,6 +33,7 @@ def create_new_tasks(
             ids=task_ids[url],
             url=url,
             description=attributes.name,
+            created_at=datetime.now(),
             status="PENDING",
         )
         db.add(new_task)
